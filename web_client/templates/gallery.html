@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lazy Media Gallery with Search</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white p-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">📁 Lazy Media Gallery</h1>
+
+    <!-- Search & Filter Inputs -->
+    <div class="mb-6 space-y-2">
+      <input type="text" id="searchInput" placeholder="Search by name, path, category, keyword" 
+             class="w-full p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+
+      <div class="flex flex-wrap gap-2">
+        <select id="categoryFilter" multiple class="p-2 rounded border dark:bg-gray-800 dark:border-gray-600 h-32">
+        </select>
+      </div>
+    </div>
+
+    <!-- Gallery Container -->
+    <div id="gallery-container" class="space-y-4"></div>
+  </div>
+
+  <script>
+    let groupedMedia = {};
+    let searchIndex = [];
+    let allCategories = new Set();
+
+    async function fetchMedia() {
+      const res = await fetch('/api/media');
+      groupedMedia = await res.json();
+      buildSearchIndex();
+      renderCategoryOptions();
+      renderFolderButtons();
+    }
+
+    function buildSearchIndex() {
+      searchIndex = [];
+      allCategories.clear();
+      for (const folder in groupedMedia) {
+        for (const file of groupedMedia[folder]) {
+          searchIndex.push({ ...file, folder });
+          (file.categories || []).forEach(cat => allCategories.add(cat));
+        }
+      }
+    }
+
+    function renderCategoryOptions() {
+      const select = document.getElementById('categoryFilter');
+      select.innerHTML = '';
+      [...allCategories].sort().forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+
+    function getSelectedCategories() {
+      const selected = [];
+      const options = document.getElementById("categoryFilter").options;
+      for (let opt of options) {
+        if (opt.selected) selected.push(opt.value.toLowerCase());
+      }
+      return selected;
+    }
+
+    function filterMedia(query) {
+      query = query.trim().toLowerCase();
+      const selectedCategories = getSelectedCategories();
+
+      const filtered = {};
+      for (const item of searchIndex) {
+        const values = [
+          item.name,
+          item.path,
+          item.folder,
+          ...(item.categories || []),
+          ...(item.keywords || []),
+          item.created_at,
+        ].join(" ").toLowerCase();
+
+        const matchesCategory = selectedCategories.length === 0 || selectedCategories.some(cat => (item.categories || []).map(c => c.toLowerCase()).includes(cat));
+
+        if (values.includes(query) && matchesCategory) {
+          if (!filtered[item.folder]) filtered[item.folder] = [];
+          filtered[item.folder].push(item);
+        }
+      }
+      return filtered;
+    }
+
+    function renderFolderButtons(filteredData = null) {
+      const data = filteredData || groupedMedia;
+      const container = document.getElementById('gallery-container');
+      container.innerHTML = '';
+
+      for (const folder in data) {
+        const sectionId = `folder-${folder.replace(/\W/g, '_')}`;
+        const files = data[folder];
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'border rounded shadow bg-white dark:bg-gray-800';
+
+        const button = document.createElement('button');
+        button.className = 'w-full text-left px-4 py-2 font-semibold bg-gray-200 dark:bg-gray-700';
+        button.textContent = `${folder === '.' ? 'Root' : folder} (${files.length} items)`;
+        button.onclick = () => toggleFolder(folder, sectionId, files);
+
+        const section = document.createElement('div');
+        section.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4 hidden';
+        section.id = sectionId;
+
+        wrapper.appendChild(button);
+        wrapper.appendChild(section);
+        container.appendChild(wrapper);
+      }
+    }
+
+    function toggleFolder(folder, sectionId, files) {
+      const section = document.getElementById(sectionId);
+      const isHidden = section.classList.contains('hidden');
+      section.classList.toggle('hidden');
+
+      if (isHidden && section.childElementCount === 0) {
+        renderFolderFiles(files, section);
+      }
+    }
+
+    function renderFolderFiles(files, container) {
+      files.forEach(file => {
+        const ext = file.path.split('.').pop().toLowerCase();
+        const card = document.createElement('div');
+        card.className = 'bg-gray-100 dark:bg-gray-900 p-2 rounded';
+
+        if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+          const img = document.createElement('img');
+          img.src = `/media/${file.path}`;
+          img.loading = 'lazy';
+          img.alt = file.name;
+          img.className = 'w-full rounded shadow';
+          card.appendChild(img);
+        } else if (['mp4','webm','mov','avi'].includes(ext)) {
+          const video = document.createElement('video');
+          video.controls = true;
+          video.className = 'w-full rounded shadow';
+          video.loading = 'lazy';
+          const source = document.createElement('source');
+          source.src = `/media/${file.path}`;
+          source.type = `video/${ext}`;
+          video.appendChild(source);
+          card.appendChild(video);
+        }
+
+        const caption = document.createElement('p');
+        caption.className = 'mt-1 text-xs break-all';
+        caption.textContent = file.name + " | " + file.created_at;
+        card.appendChild(caption);
+
+        container.appendChild(card);
+      });
+    }
+
+    ['searchInput', 'categoryFilter'].forEach(id => {
+      document.getElementById(id).addEventListener("input", () => {
+        const filtered = filterMedia(document.getElementById("searchInput").value);
+        renderFolderButtons(filtered);
+      });
+    });
+
+    fetchMedia();
+  </script>
+</body>
+</html>
