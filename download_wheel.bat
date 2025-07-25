@@ -1,0 +1,1 @@
+pip download -r requirements.txt --only-binary=:all: -d .packages/

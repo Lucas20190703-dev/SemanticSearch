@@ -5,11 +5,18 @@ import QtQuick.Layouts
 import KQuick.Controls
 import KQuick.Core
 
-BasePage {
-    title: qsTr("Home")
+ColumnLayout {
+    property alias folder: _contentView.folder
+
+    SearchPanel {
+        id: _searchPanel
+        Layout.fillWidth: true
+    }
 
     SplitView {
-        anchors.fill: parent
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
         handle: KSplitHandle {
             implicitWidth: 11
             Rectangle {
@@ -20,24 +27,22 @@ BasePage {
             }
         }
 
-        DirectoryTreeView {
-            id: _folderTreeview
-            SplitView.preferredWidth: 240
-            SplitView.fillHeight: true
-        }
-
         DirectoryContentView {
             id: _contentView
             SplitView.fillWidth: true
             SplitView.fillHeight: true
-            folder: _folderTreeview.selected
+            filterPattern: _searchPanel.nameFilter
+            startDate: _searchPanel.startDateFilter
+            endDate: _searchPanel.endDateFilter
+            dateFilterEnabled: _searchPanel.dateFilterEnabled
         }
 
         PreviewPane {
             id: _previewPane
-            SplitView.preferredWidth: 300
+            SplitView.preferredWidth: 340
             SplitView.fillHeight: true
             selectedItem: _contentView.selected
         }
     }
+
 }

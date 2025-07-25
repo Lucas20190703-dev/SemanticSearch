@@ -19,15 +19,6 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: Colors.background.primary
-        border {
-            width: 1
-            color: Colors.border.secondary
-        }
-    }
-
     Connections {
         target: sceneDetector
 

@@ -173,7 +173,7 @@ Item {
                                     icon {
                                         width: 32
                                         height: 32
-                                        source: "qrc:/icons/video.png"
+                                        ssource: "qrc:/icons/video-player.png"
                                         color: Colors.accent.highlight
                                     }
                                 }

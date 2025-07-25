@@ -24,6 +24,7 @@ import io
 from search.hybrid_search import HybridSearchEngine
 
 from file_system import *
+from scene_dectector import extract_scene_keyframes
 
 # Create router
 router = APIRouter()
@@ -207,3 +208,7 @@ def get_video_stream(request: Request, file_path: str):
             "Content-Length": str(chunk_size),
         }
     )
+    
+@router.get("/api/scene/{video_path:path}")
+def get_scenes(request: Request, video_path: str):
+    extract_scene_keyframes(video_path, )

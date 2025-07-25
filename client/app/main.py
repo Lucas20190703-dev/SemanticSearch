@@ -15,10 +15,6 @@ from app.engine.manager import EngineManager
 from resources import icons # rc file
 
 def main():    
-    # set graphic settings
-    # QGuiApplication.setAttribute(Qt.AA_UseOpenGLES)
-    # QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-
     format = QSurfaceFormat()
     format.setSwapBehavior(QSurfaceFormat.DoubleBuffer) # Double Buffering on
     format.setSwapInterval(0)                            # v-sync off
