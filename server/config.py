@@ -1,54 +1,62 @@
-# config.py
-
 import os
+from pathlib import Path
 
-# 📁 Paths
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+# -----------------------------
+# Base directories
+# -----------------------------
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+LOGS_DIR = BASE_DIR / "logs"
 
+# -----------------------------
 # Input corpus
-CORPUS_FILE = os.path.join(BASE_DIR, "data", "corpus.txt")
+# -----------------------------
+CORPUS_FILE = DATA_DIR / "corpus.txt"
 
-# Tokenizer
-TOKENIZER_DIR = os.path.join(BASE_DIR, "models", "tokenizer")
-TOKENIZER_FILE = os.path.join(TOKENIZER_DIR, "tokenizer.json")
-VOCABULARY_SIZE = 32000  # or adjust as needed
+# -----------------------------
+# Tokenizer / Model paths
+# -----------------------------
+TOKENIZER_DIR = DATA_DIR / "tokenizer"
+TOKENIZER_FILE = TOKENIZER_DIR / "tokenizer.json"
+VOCABULARY_SIZE = 32000
 
 # MLM model output
-BERT_MLM_MODEL_DIR = os.path.join(BASE_DIR, "models", "bert-mlm")
+BERT_MLM_MODEL_DIR = DATA_DIR / "bert-mlm"
 
 # TSDAE model output
-TSDAE_MODEL_DIR = os.path.join(BASE_DIR, "models", "tsdae")
-#TSDAE_MODEL_DIR = os.path.join(BASE_DIR, "tsdae-bert-base-uncased-local")
+TSDAE_MODEL_DIR = DATA_DIR / "tsdae"
 
-# 📏 Model Hyperparameters
+# -----------------------------
+# Model Hyperparameters
+# -----------------------------
 MAX_SEQ_LENGTH = 128
-EMBEDDING_DIM = 768  # Hidden size for BERT config
+EMBEDDING_DIM = 768  # matches BERT hidden size
 
-# (Optional) Logging
-LOGGING_DIR = os.path.join(BASE_DIR, "logs")
-
-# Faiss 
-FAISS_INDEX_PATH = os.path.join(BASE_DIR, "models", "faiss.index")
-FAISS_IVF_INDEX_PATH = os.path.join(BASE_DIR, "models", "faiss_ivf.index")
-
-# Filter
+# -----------------------------
+# FAISS
+# -----------------------------
+FAISS_INDEX_PATH = DATA_DIR / "faiss.index"
+FAISS_IVF_INDEX_PATH = DATA_DIR / "faiss_ivf.index"
 TOP_K = 30
 
-# Database
+# -----------------------------
+# Database (MongoDB only)
+# -----------------------------
 MONGO_DB_NAME = "Semantic"
-
 MONGO_DB_PORT = 27017
-
 MONGO_DB_HOST = "mongodb://localhost"
 
-PSQL_DB_CONFIG = {
-    "db_name": "semanticsearch",
-    "user": "semantic",
-    "password": "123456",
-    "host": "localhost",
-    "port": 5432
-}
+# -----------------------------
+# File root directory (for browsing)
+# -----------------------------
+FILE_ROOT_DIR = Path("E:/Test/Images").resolve()
 
+# -----------------------------
+# Logging
+# -----------------------------
+LOGS_DIR.mkdir(exist_ok=True)
 
-# Root Directory
-FILE_ROOT_DIR = "."
+# -----------------------------
+# API Token for protected endpoints
+# -----------------------------
+API_TOKEN = "my-secret-token"

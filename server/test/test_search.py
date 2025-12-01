@@ -2,8 +2,8 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from search.hybrid_search import HybridSearchEngine
-from app.file_system import *
+from services.faiss_service import HybridSearchEngine
+from utils.file_system import *
 
 
 def test_search():    

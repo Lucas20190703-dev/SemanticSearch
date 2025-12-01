@@ -5,7 +5,7 @@ from torch.nn.functional import cosine_similarity
 import torch
 
 # Load trained TSDAE model
-model = SentenceTransformer("models/tsdae/", device="cuda")
+model = SentenceTransformer("data/tsdae/", device="cuda")
 
 # Test sentences
 sentences = [

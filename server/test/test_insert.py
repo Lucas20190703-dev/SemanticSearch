@@ -1,4 +1,4 @@
-from search.hybrid_search import HybridSearchEngine
+from services.faiss_service import HybridSearchEngine
 
 if __name__ == "__main__":
     engine = HybridSearchEngine()

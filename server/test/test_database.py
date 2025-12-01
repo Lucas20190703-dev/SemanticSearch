@@ -6,7 +6,7 @@ import tempfile
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from sentence_transformers import SentenceTransformer
-from database.mongodb import MongoDB
+from services.mongodb_service import MongoDB
 from config import CORPUS_FILE, TSDAE_MODEL_DIR
 
 model = SentenceTransformer(TSDAE_MODEL_DIR, device="cpu")

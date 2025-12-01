@@ -3,7 +3,7 @@ Web frontend to interact with the Semantic Search API.
 Launches a small FastAPI app with HTML form and renders search results.
 
 Run:
-    uvicorn web_app.main:app --reload
+    uvicorn web_client.main:app --reload
 
 Author: Lucas
 """
@@ -17,9 +17,9 @@ import requests
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="web_app/static"), name="static")
+app.mount("/static", StaticFiles(directory="web_client/static"), name="static")
 
-templates = Jinja2Templates(directory="web_app/templates")
+templates = Jinja2Templates(directory="web_client/templates")
 
 API_URL = "http://localhost:3000/api/search"
 
