@@ -14,6 +14,7 @@ from models.schema import InsertCaptionRequest, SearchRequest
 from services.faiss_service import HybridSearchEngine
 from config import API_TOKEN, FILE_ROOT_DIR
 from utils.file_system import get_directory_structure, get_files_from_directory
+import services.expansionnetv2_module as Module
 
 # Initialize router
 router = APIRouter()
@@ -67,6 +68,13 @@ def semantic_search(req: SearchRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/caption")
+def get_caption(file: str):
+    print(f"Getting caption for: {file}")    
+    _, caption = Module.get_caption(file)
+    return {"caption": caption}
 
 # --------------------------
 # FAISS Management

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 
 import KQuick.Core 1.0
 import KQuick.Controls 1.0
+import Utils 1.0
 
 BasePage {
 	id: _root
@@ -20,19 +21,19 @@ BasePage {
 		property bool imageSourceChanged: false
 	}
 
-	Connections {
-		target: singleCaptioning
+	// Connections {
+	// 	target: singleCaptioning
 
-		function onReady() {
-			_root.getCaption(_imagePreview.imageSource)
-		}
+	// 	function onReady() {
+	// 		_root.getCaption(_imagePreview.imageSource)
+	// 	}
 
-		function onCaptionReady(captions) {
-			console.log("Captions:", captions)
-			_captionView.caption = captions.join('\n');
-			_captionView.busy = false;
-		}
-	}
+	// 	function onCaptionReady(captions) {
+	// 		console.log("Captions:", captions)
+	// 		_captionView.caption = captions.join('\n');
+	// 		_captionView.busy = false;
+	// 	}
+	// }
 
 	SplitView {
 		id: _hSplitView
@@ -87,8 +88,30 @@ BasePage {
 	}
 
 	function getCaption(imageSource) {
+		imageSource = Constants.removePrefix(imageSource)
+		if (!imageSource || imageSource.length < 1)
+		{
+			return;
+		}
 		_captionView.busy = true;
 		_captionView.caption = "";
-		singleCaptioning.caption(imageSource);
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", Constants.apiCaption + encodeURIComponent(imageSource));
+		//xhr.setRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState === XMLHttpRequest.DONE) {
+				if (xhr.status === 200) {
+					var data = JSON.parse(xhr.responseText);
+					console.log("Response:", JSON.stringify(data));
+					// Use data.caption here
+					_captionView.caption = data.caption;
+					_captionView.busy = false;
+				} else {
+					console.log("Error:", xhr.status, xhr.responseText);
+				}
+			}
+		}
+		xhr.send();
 	}
 }

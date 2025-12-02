@@ -3,6 +3,7 @@ import QtQuick 2.15
 
 import KQuick.Controls 1.0
 import KQuick.Core 1.0
+import Models 1.0
 
 Rectangle {
     id: _root
@@ -55,30 +56,10 @@ Rectangle {
         }
 
         Repeater {
-            model: [
-                "qrc:/icons/home.png",
-                "qrc:/icons/search.png",
-                "qrc:/icons/image.png"
-            ]
+            model: PageModel{}
 
             IconButtonDelegate {
-                required property var modelData
-                iconSource: modelData
             }
-        }
-
-        KSeparator {
-            width: parent.width
-        }
-
-        IconButtonDelegate {
-            index: 2
-            iconSource: "qrc:/icons/settings.png"
-        }
-
-        IconButtonDelegate {
-            index: 3
-            iconSource: "qrc:/icons/faq.png"
         }
     }
 }

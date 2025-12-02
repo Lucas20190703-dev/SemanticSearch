@@ -88,10 +88,6 @@ Item {
 
 		currentIndex: _leftDrawer.currentIndex
 
-		HomePage {
-
-		}
-		
 		ImageSearchPage {
 
 		}
@@ -100,6 +96,10 @@ Item {
 
 		}
 
+		SceneDetectPage {
+
+		}
+		
 		SettingsPage {
 
 		}

@@ -1,8 +1,6 @@
 
 from PySide6.QtCore import *
-from app.engine.search_engine import SearchEngine
 from app.engine.image_caption import ImageCaptioning
-from app.engine.expansionnetv2_module import init_expansionnetv2_model
 from app.engine.worker import Worker
 from app.engine.scene_dectector import SceneDetector
 from app.engine.file_utils import FileHelper
@@ -17,7 +15,6 @@ class EngineManager(QObject):
     def __init__(self, qmlEngine):
         super().__init__()
         
-        self._searchEngine = SearchEngine()
         self._captionEngine = ImageCaptioning()
         self._sceneDetector = SceneDetector()
         self._fileHelper = FileHelper()
@@ -26,7 +23,7 @@ class EngineManager(QObject):
         
         qmlEngine.rootContext().setContextProperty("engineManager", self)
         qmlEngine.rootContext().setContextProperty("singleCaptioning", self._captionEngine)
-        qmlEngine.rootContext().setContextProperty("searchEngine", self._searchEngine)
+        #qmlEngine.rootContext().setContextProperty("searchEngine", self._searchEngine)
         qmlEngine.rootContext().setContextProperty("sceneDetector", self._sceneDetector)
         qmlEngine.rootContext().setContextProperty("fileHelper", self._fileHelper)
         qmlEngine.rootContext().setContextProperty("directoryModel", self._directoryModel)
@@ -39,9 +36,9 @@ class EngineManager(QObject):
     @Slot()
     def initialize(self):
         self.initializingStarted.emit()
-        worker = Worker(init_expansionnetv2_model)
-        worker.signals.finished.connect(self.on_model_loaded)
-        QThreadPool.globalInstance().start(worker)        
+        # worker = Worker(init_expansionnetv2_model)
+        # worker.signals.finished.connect(self.on_model_loaded)
+        # QThreadPool.globalInstance().start(worker)        
     
     @Slot()
     def close(self):

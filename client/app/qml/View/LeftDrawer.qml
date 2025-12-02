@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 
 import KQuick.Core 1.0 
 import KQuick.Controls 1.0
+import Models 1.0
 
 Drawer {
     id: _root
@@ -68,38 +69,12 @@ Drawer {
             
             opacity: _root.position
             
-            MenuDelegate {
-                index: 0
-                image: "qrc:/icons/search.png"
-                name: qsTr("Home")
-            } 
-
-            MenuDelegate {
-                index: 0
-                image: "qrc:/icons/search.png"
-                name: qsTr("Search")
-            } 
-
-            MenuDelegate {
-                index: 1
-                image: "qrc:/icons/image.png"
-                name: qsTr("Image Caption")
-            } 
-
-            KSeparator {
-                width: parent.width
-            }
-            
-            MenuDelegate {
-                index: 2
-                image: "qrc:/icons/settings.png"
-                name: qsTr("Settings")
-            }
-
-            MenuDelegate {
-                index: 3
-                image: "qrc:/icons/faq.png"
-                name: qsTr("Help")
+            Repeater {
+                model: PageModel{}
+                MenuDelegate {
+                    required property var iconSource
+                    image: iconSource
+                }
             }
         }
 

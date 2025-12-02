@@ -2,9 +2,9 @@
 setlocal
 
 REM Set PYTHONPATH to current directory
-set PYTHONPATH=../.venv/Scripts
+set PYTHONPATH=.
 
 REM Start API server
-start cmd /k "uvicorn app.main:app --reload --port 3000"
+start cmd /k "uvicorn main:app --reload --port 3000"
 
 echo Backend Server started.

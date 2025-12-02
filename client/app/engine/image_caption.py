@@ -2,14 +2,12 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import QObject, Slot, Signal, Property, QThreadPool
+import requests
 
-import app.engine.expansionnetv2_module as Module
 import app.engine.file_utils as Utils
 
-
-
 from app.engine.worker import Worker
-
+import app.engine.api as API
 
 class ImageCaptioning(QObject):
     
@@ -20,10 +18,17 @@ class ImageCaptioning(QObject):
         super().__init__(parent)
         
         self.threadPool = QThreadPool()
-        
+    
+    @Slot(str)
     def get_caption(self, image_file):
-        return Module.get_caption(image_file)
+        prefix = "file:///"
+        if image_file.startswith(prefix):
+            image_file = image_file[len(prefix):]
+        res = API.get_caption(image_file)
+        print("Response:", res)
+        return res
         
+    
     @Slot(str)
     def caption(self, image_file):
         prefix = "file:///"
@@ -33,7 +38,7 @@ class ImageCaptioning(QObject):
             self.captionReady.emit('')
             return
         
-        worker = Worker(Module.get_caption, image_file)
+        worker = Worker(self.get_caption, image_file)
         worker.signals.result.connect(lambda result: self.captionReady.emit(result[1]))
         self.threadPool.start(worker)
 

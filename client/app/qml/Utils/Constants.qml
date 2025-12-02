@@ -6,12 +6,15 @@ QtObject {
     readonly property string apiMedia: "http://127.0.0.1:3000/api/media/"
 
     readonly property string apiSceneDetect: "http://localhost:3000/api/scene/"
+
+    readonly property string apiCaption: "http://127.0.0.1:3000/api/caption?file="
+    
     function mediaPath(file) {
         return apiMedia + removePrefix(file);
     }
 
     function removePrefix(file) {
-        if (file.startsWith("file:///")) {
+        if (file && file.startsWith("file:///")) {
             return file.substring(8);
         }
         return file;
