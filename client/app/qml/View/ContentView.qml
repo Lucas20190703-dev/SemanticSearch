@@ -34,29 +34,11 @@ Item {
 
 	LeftDrawer {
 		id: _leftDrawer
-		y: 32
 		width: 180
 		height: parent.height - y
 		currentIndex: 0
 	}
 	
-	// Connections {
-	// 	target: searchEngine? searchEngine.captionEngine : null
-
-	// 	function onDirCaptioningStarted(fileCount) {
-	// 		_statusBar.progressMessage = qsTr("Captioning");
-	// 		_statusBar.progress = 0;
-	// 	}
-
-	// 	function onDirCaptioningFinished() {
-	// 		_statusBar.message = "Captioning Finished."
-	// 	}
-
-	// 	function onProgressChanged(progress) {
-	// 		_statusBar.progress = progress;
-	// 	}
-	// }
-
 	Connections {
 		target: engineManager
 

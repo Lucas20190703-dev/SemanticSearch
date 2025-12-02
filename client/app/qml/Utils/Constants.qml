@@ -3,11 +3,19 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-    readonly property string apiMedia: "http://127.0.0.1:3000/api/media/"
+    readonly property string apiBase: "http://127.0.0.1:3000/api/"
 
-    readonly property string apiSceneDetect: "http://localhost:3000/api/scene/"
+    readonly property string apiMedia: apiBase + "media/"
 
-    readonly property string apiCaption: "http://127.0.0.1:3000/api/caption?file="
+    readonly property string apiSceneDetect: apiBase + "scene/"
+
+    readonly property string apiCaption: apiBase + "caption?file="
+
+    readonly property string apiRoot: apiBase + "directories"
+
+    readonly property string apiFiles: apiBase + "files/" // api/files/subfolder?offset=0&limit=10
+
+    readonly property string apiSearch: apiBase + "search"
     
     function mediaPath(file) {
         return apiMedia + removePrefix(file);
@@ -18,6 +26,10 @@ QtObject {
             return file.substring(8);
         }
         return file;
+    }
+
+    function parentPath(file) {
+        return file.replace(/[/\\][^/\\]*$/, "");
     }
 
     function formatFileSize(bytes) {

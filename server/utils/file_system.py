@@ -4,8 +4,9 @@ import os
 from pathlib import Path
 import mimetypes
 
+from config import FILE_ROOT_DIR
+
 # Root folder to share
-ROOT_DIR = Path("E:/Test/").resolve()
 
 # -----------------------------
 # Directory traversal
@@ -16,7 +17,7 @@ def get_directory_structure(path: Path):
         if entry.is_dir() and not entry.name.startswith('.'):
             directories.append({
                 "name": entry.name,
-                "path": str(entry.relative_to(ROOT_DIR)).replace("\\", "/"),
+                "path": str(entry.relative_to(FILE_ROOT_DIR)).replace("\\", "/"),
                 "type": "folder",
                 "children": get_directory_structure(entry)
             })
@@ -25,7 +26,7 @@ def get_directory_structure(path: Path):
 # -----------------------------
 # List files in a directory
 # -----------------------------
-def get_files_from_directory(dir_path: str, offset: int = 0, limit: int = 20):
+def get_files_from_directory(dir_path: str, offset: int = 0, limit: int = -1):
     path = Path(dir_path)
     if not path.exists() or not path.is_dir():
         return []
@@ -38,7 +39,10 @@ def get_files_from_directory(dir_path: str, offset: int = 0, limit: int = 20):
         if mime_type and (mime_type.startswith("image") or mime_type.startswith("video")):
             all_files.append((f, mime_type))
 
-    sliced = all_files[offset:offset + limit]
+    if limit < 0:
+        sliced = all_files
+    else:
+        sliced = all_files[offset:offset + limit]
 
     return [
         {

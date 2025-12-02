@@ -99,19 +99,22 @@ class HybridSearchEngine:
     # Hybrid Search
     # -----------------------------
     def search(self, content=None, top_k=TOP_K, similarity=0.1,
-               keywords=None, categories=None, created_after=None, created_before=None,
-               name_contains=None, creator=None, writer=None):
-        # Step 1: Vector search
+            keywords=None, categories=None, created_after=None, created_before=None,
+            name_contains=None, creator=None, writer=None):
+
+        # Step 1: Vector search only if content exists
         if content:
             query_vec = self.model.encode(content, convert_to_numpy=True)
-            ids, scores = self.faiss_index.search(query_vec.reshape(1, -1), k=top_k*3)
+            ids, scores = self.faiss_index.search(query_vec.reshape(1, -1), k=top_k * 3)
+
+            #faiss_map = {str(id_): float(score) for id_, score in zip(ids[0], scores[0])}
             faiss_map = {str(id_): float(score) for id_, score in zip(ids, scores)}
             id_list = list(faiss_map.keys())
         else:
-            id_list = None
+            id_list = None          # means "no vector filter"
             faiss_map = {}
 
-        # Step 2: Metadata filtering
+        # Step 2: Metadata search
         results = self.database.find_by_faiss_ids(
             ids=id_list,
             keywords=keywords,
@@ -123,21 +126,27 @@ class HybridSearchEngine:
             writer=writer
         )
 
-        # Step 3: Keep only relevant fields
         fields = ["name", "creator", "path", "created_at", "caption", "writer", "faiss_id"]
         final_results = []
+
         for doc in results:
             doc["_id"] = str(doc["_id"])
             doc["created_at"] = doc["created_at"].isoformat()
+
+            # Only compute score if FAISS was used
             if content:
                 score = faiss_map.get(doc["faiss_id"], 0.0)
                 if score < similarity:
                     continue
                 doc["score"] = score
-            final_results.append({k: doc.get(k) for k in fields + (["score"] if content else [])})
+                final_results.append({k: doc.get(k) for k in fields + ["score"]})
+            else:
+                # Pure metadata mode → no scores
+                final_results.append({k: doc.get(k) for k in fields})
 
-        # Step 4: Sort by score
+        # Sort only when scores exist
         if content:
             final_results.sort(key=lambda x: x["score"], reverse=True)
 
         return final_results[:top_k]
+

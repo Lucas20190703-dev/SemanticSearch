@@ -16,11 +16,14 @@ Pane {
 	padding: 16
 	topPadding: 10
 
-	KText {
+	TextInput {
 		id: _caption
 		width: parent.width
 		wrapMode: Text.Wrap
-		font.pointSize: 11
+		readOnly: true
+		selectByMouse: true
+		color: Colors.foreground.primary
+		font.pointSize: 11		
 	}
 
 	KLoadIndicator {

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import KQuick.Controls
 import KQuick.Core
+import Utils
 
 Item {
     id: _root
@@ -19,7 +20,7 @@ Item {
 
         loading = true;
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://localhost:3000/api/files/" +
+        xhr.open("GET", Constants.apiFiles +
                  encodeURIComponent(folder) +
                  `?offset=${offset}&limit=${limit}`);
         xhr.onreadystatechange = function () {
@@ -29,7 +30,7 @@ Item {
                     hasMore = false;
                 for (let i = 0; i < files.length; ++i) {
                     let file = files[i];
-                    file['filePath'] = `http://localhost:3000/api/media/${file['filePath']}`;
+                    file['filePath'] = `${Constants.apiMedia}${file['filePath']}`;
                     _mediaModel.append(file);
                     console.log("File:", JSON.stringify(file))
                 }

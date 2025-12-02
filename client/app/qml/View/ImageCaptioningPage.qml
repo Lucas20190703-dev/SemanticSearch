@@ -8,32 +8,11 @@ import Utils 1.0
 BasePage {
 	id: _root
 	title: qsTr("Image Captioning")
-	
-	onVisibleChanged: {
-		if (visible && d.imageSourceChanged) {
-			_root.getCaption(_imagePreview.imageSource);
-			d.imageSourceChanged = false;
-		}
-	}
 
 	QtObject {
 		id: d
 		property bool imageSourceChanged: false
 	}
-
-	// Connections {
-	// 	target: singleCaptioning
-
-	// 	function onReady() {
-	// 		_root.getCaption(_imagePreview.imageSource)
-	// 	}
-
-	// 	function onCaptionReady(captions) {
-	// 		console.log("Captions:", captions)
-	// 		_captionView.caption = captions.join('\n');
-	// 		_captionView.busy = false;
-	// 	}
-	// }
 
 	SplitView {
 		id: _hSplitView
@@ -67,12 +46,7 @@ BasePage {
 					source: _sourceLIstView.currentImage
 
 					onSourceChanged: {
-						if (visible) {
-							_root.getCaption(source);
-						}
-						else {
-							d.imageSourceChanged = true;
-						}
+						_root.getCaption(source);
 					}
 				}
 

@@ -23,7 +23,7 @@ KFramelessWindow {
     color: "transparent"
     
     onClosing: {
-        engineManager.close()
+        //engineManager.close()
     }
     
     Settings {

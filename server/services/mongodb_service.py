@@ -76,30 +76,35 @@ class MongoDB:
     # -----------------------------
     def find_by_faiss_ids(self, ids: List[str] = None, **kwargs):
         query = {}
+
         if ids:
             query["faiss_id"] = {"$in": ids}
 
-        if "keywords" in kwargs and kwargs["keywords"]:
+        if kwargs.get("keywords"):
             query["keywords"] = {"$in": kwargs["keywords"]}
 
-        if "categories" in kwargs and kwargs["categories"]:
+        if kwargs.get("categories"):
             query["categories"] = {"$in": kwargs["categories"]}
 
-        if "writer" in kwargs and kwargs["writer"]:
+        if kwargs.get("writer"):
             query["writer"] = kwargs["writer"]
 
-        if "creator" in kwargs and kwargs["creator"]:
+        if kwargs.get("creator"):
             query["creator"] = kwargs["creator"]
 
-        if "created_after" in kwargs or "created_before" in kwargs:
-            query["created_at"] = {}
-            if kwargs.get("created_after"):
-                query["created_at"]["$gte"] = datetime.fromisoformat(kwargs["created_after"])
-            if kwargs.get("created_before"):
-                query["created_at"]["$lte"] = datetime.fromisoformat(kwargs["created_before"])
+        created_at_filter = {}
+        if kwargs.get("created_after"):
+            created_at_filter["$gte"] = datetime.fromisoformat(kwargs["created_after"])
+        if kwargs.get("created_before"):
+            created_at_filter["$lte"] = datetime.fromisoformat(kwargs["created_before"])
+        if created_at_filter:
+            query["created_at"] = created_at_filter
 
-        if "name_contains" in kwargs and kwargs["name_contains"]:
-            query["caption"] = {"$regex": kwargs["name_contains"], "$options": "i"}
+        if kwargs.get("name_contains"):
+            query["name"] = {
+                "$regex": kwargs["name_contains"],
+                "$options": "i"
+            }
 
         limit = int(kwargs.get("limit", 0))
         skip = int(kwargs.get("skip", 0))

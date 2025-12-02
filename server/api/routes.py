@@ -54,17 +54,23 @@ def semantic_search(req: SearchRequest):
             writer=req.writer
         )
 
+        # CSV OUTPUT
         if req.format == "csv" and results:
             output = io.StringIO()
             writer = csv.DictWriter(output, fieldnames=results[0].keys())
             writer.writeheader()
             writer.writerows(results)
             output.seek(0)
-            return StreamingResponse(output, media_type="text/csv", headers={
-                "Content-Disposition": "attachment; filename=search_results.csv"
-            })
+            return StreamingResponse(
+                output,
+                media_type="text/csv",
+                headers={
+                    "Content-Disposition": "attachment; filename=search_results.csv"
+                }
+            )
 
-        return JSONResponse(content=results)
+        # JSON OUTPUT
+        return results   # FastAPI will automatically JSON-serialize
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -75,6 +81,8 @@ def get_caption(file: str):
     print(f"Getting caption for: {file}")    
     _, caption = Module.get_caption(file)
     return {"caption": caption}
+
+
 
 # --------------------------
 # FAISS Management
@@ -140,9 +148,17 @@ def get_directories():
     return JSONResponse(get_directory_structure(FILE_ROOT_DIR))
 
 @router.get("/api/files/{dir_path:path}")
-def get_files(dir_path: str, offset: int = Query(0), limit: int = Query(20)):
-    path = os.path.join(FILE_ROOT_DIR, dir_path)
-    return JSONResponse(get_files_from_directory(path, offset, limit))
+def get_files(dir_path: str, offset: int = Query(0), limit: int = Query(-1)):
+    # Build full path
+    full_path = os.path.abspath(os.path.join(FILE_ROOT_DIR, dir_path))
+
+    # Security check: prevent access outside FILE_ROOT_DIR
+    if not full_path.startswith(os.path.abspath(FILE_ROOT_DIR)):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    # Get files
+    files_list = get_files_from_directory(full_path, offset, limit)
+    return files_list
 
 @router.get("/api/download/{file_path:path}")
 def download_file(file_path: str):

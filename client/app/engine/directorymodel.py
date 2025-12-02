@@ -9,9 +9,15 @@ class DirectoryModel(QAbstractItemModel):
         self.loadData(api_url)
 
     def loadData(self, url):
-        res = requests.get(url)
-        if res.status_code == 200:
-            self._populate(self.rootItem, res.json())
+        try:
+            res = requests.get(url, timeout=10)
+            res.raise_for_status()  # raises HTTPError for non-200
+            data = res.json()       # may raise ValueError if invalid JSON
+            self._populate(self.rootItem, data)
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+        except ValueError as e:
+            print(f"Invalid JSON: {e}")        
 
     def _populate(self, parent: TreeItem, nodes):
         for node in nodes:

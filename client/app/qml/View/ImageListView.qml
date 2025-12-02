@@ -17,23 +17,23 @@ ColumnLayout {
         Layout.fillWidth: true
         
         onNameFilterChanged: {
-            searchEngine.fileModel.setSearchText(nameFilter);
+            //searchEngine.fileModel.setSearchText(nameFilter);
         }
 
         onCaptionFilterChanged: {
-            searchEngine.fileModel.setSearchCaption(captionFilter);
+            //searchEngine.fileModel.setSearchCaption(captionFilter);
         }
 
         onSimilarityChanged: {
-            searchEngine.fileModel.setSearchCaptionThreshold(similarity);
+            //searchEngine.fileModel.setSearchCaptionThreshold(similarity);
         }
 
         onStartDateFilterChanged: {
-            searchEngine.fileModel.setSearchDate(startDateFilter, endDateFilter);
+            //searchEngine.fileModel.setSearchDate(startDateFilter, endDateFilter);
         }
 
         onEndDateFilterChanged: {
-            searchEngine.fileModel.setSearchDate(startDateFilter, endDateFilter);
+            //searchEngine.fileModel.setSearchDate(startDateFilter, endDateFilter);
         }
     }
     

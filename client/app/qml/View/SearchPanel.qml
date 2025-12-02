@@ -14,8 +14,8 @@ Pane {
                                     _dateCheck.checked ||
                                     (_captionCheck.checked && _captionCheck.text)
 
-    readonly property bool nameFilterEnabled: _nameCheck.checked
-    readonly property bool cpationFilterEnabled: _captionCheck.checked
+    readonly property bool nameFilterEnabled: nameFilter.length > 0
+    readonly property bool cpationFilterEnabled: captionFilter.length > 0
     readonly property bool dateFilterEnabled: _dateCheck.checked
 
     readonly property string nameFilter: _nameCheck.checked? _nameField.text : ""
@@ -26,6 +26,7 @@ Pane {
 
     readonly property real collapsedHeight: 32 + topPadding + bottomPadding
 
+    signal searchClicked(var params)
 
     background: Rectangle {
         color: Colors.background.primary
@@ -143,7 +144,7 @@ Pane {
             KSlider {
                 id: _similaritySlider
                 anchors.verticalCenter: parent.verticalCenter
-                width: 120
+                width: 80
                 from: 0
                 to: 1.0
                 stepSize: 0.01
@@ -153,6 +154,16 @@ Pane {
                 anchors.verticalCenter: parent.verticalCenter
                 text: _similaritySlider.value.toFixed(2)
                 opacity: _captionCheck.checked? 1.0 : 0.6
+                rightPadding: 30
+            }
+
+            KButton {
+                anchors.verticalCenter: parent.verticalCenter
+                text: qsTr("Search")
+                display: Button.TextOnly
+                horizontalPadding: 12
+                enabled: nameFilterEnabled || cpationFilterEnabled || dateFilterEnabled
+                onClicked: _root.searchClicked(getParams())
             }
         }
     }
@@ -289,5 +300,27 @@ Pane {
         Behavior on rotation {
             NumberAnimation { duration: 200 }
         }
+    }
+
+    function getParams()
+    {
+        return {
+            content:        _root.captionFilter,
+            top_k:          10,
+            similarity:     _root.similarity,
+            keywords:       [], // TODO
+            categories:     [], // TODO
+            created_after:  dateFilterEnabled? toDateString(_root.startDateFilter) : null,
+            created_before: dateFilterEnabled? toDateString(_root.endDateFilter) : null,
+            name_contains:  _root.nameFilter,
+            creator:        null,
+            writer:         null,
+            format:         "json"
+        };
+    }
+
+    function toDateString(date)
+    {
+        return date.toISOString().split("T")[0];
     }
 }
