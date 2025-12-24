@@ -40,7 +40,8 @@ class HybridSearchEngine:
 
         for row in rows:
             _id = row["_id"]
-            faiss_id = self.faiss_index.hash_objectid_to_int64(_id)
+            file_path = row["path"]
+            faiss_id = self.faiss_index.hash_objectid_to_int64(file_path)
             ids.append(faiss_id)
             vectors.append(np.array(row["embedding"], dtype=np.float32))
             object_ids.append(_id)
@@ -69,6 +70,7 @@ class HybridSearchEngine:
 
         for row in results:
             obj_id = row["_id"]
+            file_path = row["path"]
             embedding = row.get("embedding")
 
             # Compute embedding if missing
@@ -78,14 +80,14 @@ class HybridSearchEngine:
             if embedding is None:
                 continue
 
-            ids.append(self.faiss_index.hash_objectid_to_int64(obj_id))
+            ids.append(self.faiss_index.hash_objectid_to_int64(file_path))
             vectors.append(embedding)
             object_ids.append(obj_id)
 
         embeddings_np = np.vstack(vectors)
         ids_np = np.array(ids, dtype=np.int64)
 
-        self.faiss_index.build(embeddings_np, ids_np)
+        self.faiss_index.insert(ids_np, embeddings_np)
         self.faiss_index.save()
 
         # Update DB

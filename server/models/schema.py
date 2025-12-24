@@ -10,7 +10,7 @@ from datetime import datetime
 
 class SearchRequest(BaseModel):
     content: Optional[str] = None
-    top_k: int = 5
+    top_k: int = 30
     similarity: float = 0.1
     keywords: Optional[List[str]] = None
     categories: Optional[List[str]] = None

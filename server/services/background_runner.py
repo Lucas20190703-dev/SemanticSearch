@@ -53,18 +53,21 @@ class BackgroundRunner:
                 # Generate embedding
                 embedding = self.model.encode(caption).tolist()
 
+                faiss_id = search_engine.faiss_index.hash_objectid_to_int64(str(file_path))
+
                 # Insert into MongoDB
                 inserted_id = self.db.insert(
                     path=str(file_path),
                     caption=caption,
-                    embedding=embedding
+                    faiss_id=faiss_id,
                 )
 
-                if inserted_id:
-                    # Insert into FAISS safely
-                    faiss_id = search_engine.faiss_index.hash_objectid_to_int64(inserted_id)
-                    with self.faiss_lock:
-                        search_engine.faiss_index.insert([faiss_id], [embedding])
-                        search_engine.faiss_index.save()
+                if not inserted_id:
+                    continue
 
-                    print(f"[BackgroundRunner] Indexed: {file_path} -> {inserted_id}")
+                # Insert into FAISS safely
+                with self.faiss_lock:
+                    search_engine.faiss_index.insert([faiss_id], [embedding])
+                    search_engine.faiss_index.save()
+
+                print(f"[BackgroundRunner] Indexed: {file_path} -> {inserted_id}")

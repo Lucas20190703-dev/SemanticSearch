@@ -32,13 +32,12 @@ class MongoDB:
         doc = {
             "name": os.path.basename(path),
             "path": path,
-            "caption": kwargs.get("caption"),
-            "creator": kwargs.get("creator"),
-            "writer": kwargs.get("writer"),
-            "categories": kwargs.get("categories"),
-            "keywords": kwargs.get("keywords"),
-            "embedding": kwargs.get("embedding"),
-            "faiss_id": kwargs.get("faiss_id"),
+            "caption": kwargs.get("caption") or "",
+            "creator": kwargs.get("creator") or "",
+            "writer": kwargs.get("writer") or "",
+            "categories": kwargs.get("categories") or [],
+            "keywords": kwargs.get("keywords") or [],
+            "faiss_id": kwargs.get("faiss_id") or -1,
             "created_at": datetime.now()
         }
 

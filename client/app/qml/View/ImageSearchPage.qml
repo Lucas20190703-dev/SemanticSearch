@@ -112,7 +112,7 @@ BasePage {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", Constants.apiSearch);
         xhr.setRequestHeader("Content-Type", "application/json");
-
+        
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
@@ -120,8 +120,34 @@ BasePage {
                     _mediaModel.clear();
                     for (let i = 0; i < files.length; ++i) {
                         let file = files[i];
+                        console.log("file:", JSON.stringify(file));
+
                         file['filePath'] = `${Constants.apiMedia}${file['path']}`;
-                        _mediaModel.append(file);
+
+                        // to avoid missing field
+                        const { 
+                            name = "",
+                            creator = "",
+                            path = "",
+                            filePath = "",
+                            created_at = "",
+                            caption = "",
+                            writer = "",
+                            faiss_id = -1,
+                            score = 0
+                        } = file;
+
+                        _mediaModel.append({
+                            name,
+                            creator,
+                            path,
+                            filePath,
+                            created_at,
+                            caption,
+                            writer,
+                            faiss_id,
+                            score
+                        });
                     }
 
                     if (callback) {

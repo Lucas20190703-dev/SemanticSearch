@@ -306,7 +306,7 @@ Pane {
     {
         return {
             content:        _root.captionFilter,
-            top_k:          10,
+            top_k:          30,
             similarity:     _root.similarity,
             keywords:       [], // TODO
             categories:     [], // TODO
